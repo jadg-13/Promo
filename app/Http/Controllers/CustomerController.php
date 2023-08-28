@@ -8,12 +8,34 @@ use App\Mail\VerificacionCorreo;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\CodePromo;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
     //
     public function index()
     {
+        $id = Session::get('user_id');
+
+        if (session()->has('user_id')) {
+
+            $customer = Customer::find($id);
+            $invoices = Invoice::where('id_customer', $id)->get();
+
+            return view('customers.invoices', compact('customer', 'invoices'));
+        } else {
+            return view('customers.login');
+        }
+        //return view('customers.login');
+    }
+
+    public function logout()
+    {
+        Auth::logout();
+        $expiresAt = now()->addMinutes(0);
+        Session::put('user_id', null);
+        Session::put('expires_at', $expiresAt);
         return view('customers.login');
     }
 
@@ -31,22 +53,28 @@ class CustomerController extends Controller
 
     public function validatecode(Request $request)
     {
-        
+
         $id = $request->id;
         $code = $request->codigo;
         $customer = Customer::find($id);
-      
+
         $dato = CodePromo::where('code', $code)->first();
-       
+
         if (($dato && $dato->asset == true) || ($customer->code_mail == $code)) {
             $valor = now();
             $dato->verified_at = $valor;
             $dato->asset = false;
             $dato->save();
-            $customer->code_mail= $code;
+            $customer->code_mail = $code;
             $customer->email_verified_at = $valor;
             $customer->save();
-            $id= $customer->id;
+            $id = $customer->id;
+
+            $expiresAt = now()->addMinutes(10);
+            Session::put('user_id', $id);
+            Session::put('expires_at', $expiresAt);
+
+
             return redirect()->route('customer.invoices', ['id' => $id]);
         } else {
             return "Error al validar: El código ingresado no existe o ya fue registrado";
@@ -85,7 +113,7 @@ class CustomerController extends Controller
         // Crear el usuario en la base de datos
         $customer = new Customer();
         $customer->email = $request->email;
-        $codigoVerificacion = 0;//mt_rand(100000, 999999);
+        $codigoVerificacion = 0; //mt_rand(100000, 999999);
         $customer->code_mail = $codigoVerificacion;
         $customer->save();
 
@@ -97,6 +125,7 @@ class CustomerController extends Controller
 
     public  function view_invoices($id)
     {
+
         $customer = Customer::find($id);
         $invoices = Invoice::where('id_customer', $id)->get();
 

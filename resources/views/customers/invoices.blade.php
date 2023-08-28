@@ -3,6 +3,7 @@
     <div class="card col-12 col-md-6">
         <div class="card-header">
             <h2>Cliente</h2>
+            <a href="{{route('customer.logout')}}">Salir</a>
         </div>
         <div class="card-body">
             <form action="{{ route('customer.invoices.save') }}" method="POST" enctype="multipart/form-data">

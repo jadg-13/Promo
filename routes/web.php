@@ -23,6 +23,7 @@ Route::get('customers', [CustomerController::class, 'index'])->name('customer.in
 Route::post('customers/login', [CustomerController::class, 'login'])->name('customer.login');
 Route::get('customers/invalid', [CustomerController::class, 'invalid'])->name('customer.invalid');
 Route::get('customers/confirmcode/{id}',[CustomerController::class, 'confirmcode'] )->name('customer.confirm');
+Route::get('customers/close', [CustomerController::class, 'logout'])->name('customer.logout');
 Route::post('customers/validatecode', [CustomerController::class, 'validatecode'])->name('validatecode');
 
 Route::get('customers/add', [CustomerController::class, 'addCustomer'])->name('customer.add');
