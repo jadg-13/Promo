@@ -20,7 +20,7 @@
                 <h5>Ingresar Nueva Factura</h5>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <label for="firstname">Nombres:</label>
+                        <label for="firstname">Nombres</label>
                         <input type="text" name="firstname" id="firstname" class="form-control" {{ old('firstname') }}
                             required>
                         @error('firstname')
@@ -29,7 +29,7 @@
                         @enderror
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="secondname">Apellidos:</label>
+                        <label for="secondname">Apellidos</label>
                         <input type="text" name="secondname" id="secondname" class="form-control" {{ old('secondname') }}
                             required>
                         @error('secondname')
@@ -40,7 +40,7 @@
                 </div>
                 <div class="row">
                     <div class="col-12 col-md-6">
-                        <label for="identification">Identificación:</label>
+                        <label for="identification">Identificación</label>
                         <input type="text" name="identification" id="identification" class="form-control"
                             {{ old('identification') }} required>
 
@@ -50,7 +50,7 @@
                         @enderror
                     </div>
                     <div class="col-12 col-md-6">
-                        <label for="phone">Teléfono:</label>
+                        <label for="phone">Teléfono</label>
                         <input type="text" name="phone" id="phone" class="form-control" {{ old('phone') }}
                             required>
                         @error('phone')
@@ -61,14 +61,26 @@
                     <div class="row">
                         <div class="col-12 col-md-6">
                             <input type="hidden" name="customer_id" value="{{ $customer->id }}">
-                            <label for="num_fact">Número de Factura:</label>
+                            <label for="num_fact">Número de Factura</label>
                             <input type="text" id="num_fact" name="num_fact" class="form-control" required>
                             @if ($errors->has('Advertencia'))
                                 <br>
                                 "{{ $errors->first('Advertencia') }}"
                             @endif
                         </div>
-                        <div class="col-12 col-md-6 ">
+                        <div class="col-12 col-md-6">
+                            <input type="hidden" name="customer_id" value="{{ $customer->id }}">
+                            <label for="codigo_fact">Codigo a verificar</label>
+                            <input type="text" id="codigo_fact" name="codigo_fact" class="form-control" required>
+                            @if ($errors->has('Advertencia_1'))
+                                <br>
+                                "{{ $errors->first('Advertencia_1') }}"
+                            @endif
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12  ">
+                            <label for="num_fact">Punto de venta</label>
                             <select id="punto_venta" name="punto_venta" class="form-control" required>
                                 <option disabled selected value="">Seleccionar</option>
                                 <option value="pali">Pali</option>

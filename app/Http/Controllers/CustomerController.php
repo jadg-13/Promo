@@ -58,19 +58,16 @@ class CustomerController extends Controller
         $code = $request->codigo;
         $customer = Customer::find($id);
 
-        $dato = CodePromo::where('code', $code)->first();
-
-        if (($dato && $dato->asset == true) || ($customer->code_mail == $code)) {
+        
+        if ($customer->code_mail == $code) {
             $valor = now();
-            $dato->verified_at = $valor;
-            $dato->asset = false;
-            $dato->save();
+
             $customer->code_mail = $code;
             $customer->email_verified_at = $valor;
             $customer->save();
             $id = $customer->id;
 
-            $expiresAt = now()->addMinutes(10);
+            $expiresAt = now()->addMinutes(120);
             Session::put('user_id', $id);
             Session::put('expires_at', $expiresAt);
 
@@ -89,6 +86,12 @@ class CustomerController extends Controller
         $customer = Customer::where('email', $email)->first();
 
         if ($customer) {
+            $codigoVerificacion = mt_rand(100000, 999999);
+            $customer->code_mail = $codigoVerificacion;
+            $customer->save();
+
+            Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
+
 
             $dato = $customer->id;
             return redirect()->route('customer.confirm', ['id' => $dato]);
@@ -113,7 +116,7 @@ class CustomerController extends Controller
         // Crear el usuario en la base de datos
         $customer = new Customer();
         $customer->email = $request->email;
-        $codigoVerificacion = 0; //mt_rand(100000, 999999);
+        $codigoVerificacion = mt_rand(100000, 999999);
         $customer->code_mail = $codigoVerificacion;
         $customer->save();
 
@@ -141,6 +144,20 @@ class CustomerController extends Controller
             session()->flash('Advertencia', $mensaje);
             return redirect()->back()->withErrors(['Advertencia' => $mensaje]);
         }
+
+        $code =$request->codigo_fact;
+        $promo = CodePromo::where('code', $code)->first();
+        if($promo && $promo->asset == true){
+            $valor = now();
+            $promo->verified_at = $valor;
+            $promo->asset = false;
+            $promo->save(); 
+        }else{
+            $mensaje = 'El código proporcionado es invalido';
+            session()->flash('Advertencia_1', $mensaje);
+            return redirect()->back()->withErrors(['Advertencia_1' => $mensaje]);
+        }
+       
 
         $dato = new Invoice();
         $dato->id_customer = $request->customer_id;
