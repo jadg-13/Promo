@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificacionCorreo;
 use App\Models\Customer;
 use App\Models\Invoice;
+use App\Models\CodePromo;
 
 class CustomerController extends Controller
 {
@@ -24,27 +25,31 @@ class CustomerController extends Controller
     public function confirmcode($id)
     {
         $customer = Customer::find($id);
-
         return view('customers.confirmcode', compact('customer'));
     }
 
 
     public function validatecode(Request $request)
     {
-
+        
         $id = $request->id;
         $code = $request->codigo;
-        $dato = Customer::find($id);
-
-        if ($dato && $dato->code_mail == $code) {
-
+        $customer = Customer::find($id);
+      
+        $dato = CodePromo::where('code', $code)->first();
+       
+        if (($dato && $dato->asset == true) || ($customer->code_mail == $code)) {
             $valor = now();
-            $dato->email_verified_at = $valor;
+            $dato->verified_at = $valor;
+            $dato->asset = false;
             $dato->save();
-            $dato = $dato->id;
-            return redirect()->route('customer.invoices', ['id' => $dato]);
+            $customer->code_mail= $code;
+            $customer->email_verified_at = $valor;
+            $customer->save();
+            $id= $customer->id;
+            return redirect()->route('customer.invoices', ['id' => $id]);
         } else {
-            return "Error al validar";
+            return "Error al validar: El código ingresado no existe o ya fue registrado";
         }
     }
 
@@ -56,15 +61,9 @@ class CustomerController extends Controller
         $customer = Customer::where('email', $email)->first();
 
         if ($customer) {
-            
-            if (!empty($customer->email_verified_at)) {
-                // Las credenciales son correctas, puedes realizar las acciones necesarias aquí
-                $dato = $customer->id;
-                return redirect()->route('customer.invoices', ['id' => $dato]);
-            } else {
-                $dato = $customer->id;
-                return redirect()->route('customer.confirm', ['id' => $dato]);
-            }
+
+            $dato = $customer->id;
+            return redirect()->route('customer.confirm', ['id' => $dato]);
         } else {
             return redirect()->route('customer.add');
         }
@@ -86,14 +85,14 @@ class CustomerController extends Controller
         // Crear el usuario en la base de datos
         $customer = new Customer();
         $customer->email = $request->email;
-        $codigoVerificacion = mt_rand(100000, 999999);
+        $codigoVerificacion = 0;//mt_rand(100000, 999999);
         $customer->code_mail = $codigoVerificacion;
         $customer->save();
 
         Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
 
         // Redirige al usuario a una página de éxito o muestra un mensaje
-        return redirect()->back()->with('mensaje', 'Se ha enviado un correo de verificación a tu dirección de correo electrónico.');
+        return view('customers.login');
     }
 
     public  function view_invoices($id)
@@ -133,28 +132,4 @@ class CustomerController extends Controller
         $codigo = $request->customer_id;
         return redirect()->route('customer.invoices', ['id' => $codigo]);
     }
-
-    /*
-    public function verify(Request $request)
-    {
-        // Validar el código de validación
-        $request->validate([
-            'codigo' => 'required',
-        ]);
-
-        // Buscar al usuario por el código de validación
-        $customer = Customer::where('verification_code', $request->codigo)->first();
-
-        if ($customer) {
-            // Marcar al usuario como verificado
-            $customer->verified = true;
-            $customer->save();
-
-            // Redirigir al usuario a la página de inicio de sesión
-            return redirect()->route('login')->with('success', 'La cuenta ha sido verificada. Inicia sesión para continuar.');
-        } else {
-            // Redirigir de vuelta a la vista de validación con un mensaje de error
-            return redirect()->back()->with('error', 'El código de validación no es válido.');
-        }
-    }*/
 }

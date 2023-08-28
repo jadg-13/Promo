@@ -12,11 +12,11 @@ return new class extends Migration
     public function up(): void
     {
         //
-        Schema::create('customers', function(Blueprint $table){
+        Schema::create('code_promos', function(Blueprint $table){
             $table->id();
-            $table->string('email')->unique();
-            $table->string('code_mail');
-            $table->timestamp('email_verified_at')->nullable();
+            $table->string('code')->unique();
+            $table->boolean('asset')->default(true);
+            $table->timestamp('verified_at')->nullable();
             $table->timestamps();
         });
     }
@@ -27,6 +27,6 @@ return new class extends Migration
     public function down(): void
     {
         //
-        Schema::dropIfExists('customers');
+        Schema::dropIfExists('codespromo');
     }
 };
