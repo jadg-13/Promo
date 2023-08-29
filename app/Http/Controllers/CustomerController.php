@@ -16,18 +16,22 @@ class CustomerController extends Controller
     //
     public function index()
     {
-        $id = Session::get('user_id');
+        
 
         if (session()->has('user_id')) {
-
+            $id = Session::get('user_id');
+            $this->view_invoices($id);
             $customer = Customer::find($id);
             $invoices = Invoice::where('id_customer', $id)->get();
-
             return view('customers.invoices', compact('customer', 'invoices'));
         } else {
             return view('customers.login');
         }
         //return view('customers.login');
+    }
+
+    public function hola($codigo){
+        echo "El valor de codigo es: $codigo";
     }
 
     public function logout()
@@ -128,10 +132,8 @@ class CustomerController extends Controller
 
     public  function view_invoices($id)
     {
-
-        $customer = Customer::find($id);
+        $customer = Customer::find($id);      
         $invoices = Invoice::where('id_customer', $id)->get();
-
         return view('customers.invoices', compact('customer', 'invoices'));
     }
 

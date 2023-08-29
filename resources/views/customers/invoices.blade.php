@@ -3,16 +3,18 @@
     <div class="card col-12 col-md-6">
         <div class="card-header">
             <h2>Cliente</h2>
-            <a href="{{route('customer.logout')}}">Salir</a>
+            <a href="{{ route('customer.logout') }}">Salir</a>
         </div>
         <div class="card-body">
             <form action="{{ route('customer.invoices.save') }}" method="POST" enctype="multipart/form-data">
                 @csrf
 
                 <div class="row">
-                    <div class="col-12 ">
-                        <label for="email" class="form-label">Email</label>
-                        <input type="email" class="form-control" id="email" value="<?php echo $customer->email; ?>">
+                    <div class="col-3 col-md-4 text-center">
+                        <p class="">Identificado:</p>
+                    </div>
+                    <div class="col-9 col-md-8 ">
+                        <p class="h4" id="email"><?php echo $customer->email; ?></p>
                     </div>
 
                 </div>
@@ -110,7 +112,7 @@
                                 style="display: none; max-width: 200px; max-height: 200px;">
                             <input type="file" id="imagen" name="imagen" accept="image/jpg" required>
                             <br>
-                            
+
                             <script>
                                 var inputImagen = document.getElementById("imagen");
                                 var imagenMiniatura = document.getElementById("imagenMiniatura");
@@ -133,30 +135,38 @@
                         <button type="submit" class="btn btn-outline-success col-12 col-md-4">Guardar Factura</button>
                     </div>
             </form>
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th>Factura</th>
-                        <th>Punto de Venta</th>
-                        <th>Foto</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($invoices as $factura)
+            <div class="container">
+
+
+                <table class="table table-striped">
+                    <thead>
                         <tr>
-                            <td>{{ $factura->invoice_number }}</td>
-                            <td>{{ $factura->point_sale }}</td>
-                            <td>
-                                @if ($factura->image)
-                                    <img src="{{ asset('images/' . $factura->image) }}" alt="Imagen del cliente"
-                                        width="180px" height="100px">
-                                @else
-                                    Sin imagen
-                                @endif
-                            </td>
+                            <th>Factura</th>
+                            <th>Punto de Venta</th>
+                            <th>Foto</th>
                         </tr>
-                    @endforeach
-                </tbody>
+                    </thead>
+                    <tbody>
+                        @foreach ($invoices as $factura)
+                            <tr>
+                                <td>{{ $factura->invoice_number }}</td>
+                                <td>{{ $factura->point_sale }}</td>
+                                <td>
+                                    @if ($factura->image)
+                                        <img src="{{ asset('images/' . $factura->image) }}" alt="Imagen del cliente"
+                                            width="180px" height="100px">
+                                    @else
+                                        Sin imagen
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer text-body-secondary text-center">
+            Tienes <?php echo (count($invoices)); ?> facturas registradas
         </div>
     </div>
 @endsection
