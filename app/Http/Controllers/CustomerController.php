@@ -10,13 +10,14 @@ use App\Models\Invoice;
 use App\Models\CodePromo;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
+use RealRashid\SweetAlert\Facades\Alert;
 
 class CustomerController extends Controller
 {
     //
     public function index()
     {
-        
+
 
         if (session()->has('user_id')) {
             $id = Session::get('user_id');
@@ -30,9 +31,6 @@ class CustomerController extends Controller
         //return view('customers.login');
     }
 
-    public function hola($codigo){
-        echo "El valor de codigo es: $codigo";
-    }
 
     public function logout()
     {
@@ -62,7 +60,7 @@ class CustomerController extends Controller
         $code = $request->codigo;
         $customer = Customer::find($id);
 
-        
+
         if ($customer->code_mail == $code) {
             $valor = now();
 
@@ -78,7 +76,9 @@ class CustomerController extends Controller
 
             return redirect()->route('customer.invoices', ['id' => $id]);
         } else {
-            return "Error al validar: El código ingresado no existe o ya fue registrado";
+            session()->flash('error_message', 'Error al validar: El código ingresado no existe o ya fue registrado');
+            return redirect()->back();
+            
         }
     }
 
@@ -132,7 +132,7 @@ class CustomerController extends Controller
 
     public  function view_invoices($id)
     {
-        $customer = Customer::find($id);      
+        $customer = Customer::find($id);
         $invoices = Invoice::where('id_customer', $id)->get();
         return view('customers.invoices', compact('customer', 'invoices'));
     }
@@ -143,23 +143,25 @@ class CustomerController extends Controller
         $existe = Invoice::where('invoice_number', $request->num_fact)->first();
         if ($existe) {
             $mensaje = 'El registro de la factura ya existe';
-            session()->flash('Advertencia', $mensaje);
-            return redirect()->back()->withErrors(['Advertencia' => $mensaje]);
+            session()->flash('error_message', $mensaje);
+            return redirect()->back()
+            ->withInput();
+            
         }
 
-        $code =$request->codigo_fact;
+        $code = $request->codigo_fact;
         $promo = CodePromo::where('code', $code)->first();
-        if($promo && $promo->asset == true){
+        if ($promo && $promo->asset == true) {
             $valor = now();
             $promo->verified_at = $valor;
             $promo->asset = false;
-            $promo->save(); 
-        }else{
-            $mensaje = 'El código proporcionado es invalido';
-            session()->flash('Advertencia_1', $mensaje);
-            return redirect()->back()->withErrors(['Advertencia_1' => $mensaje]);
+            $promo->save();
+        } else {
+            session()->flash('error_message', 'El código proporcionado es invalido');
+            return redirect()->back()
+            ->withInput();
         }
-       
+
 
         $dato = new Invoice();
         $dato->id_customer = $request->customer_id;
@@ -178,6 +180,7 @@ class CustomerController extends Controller
 
         $dato->save();
         $codigo = $request->customer_id;
-        return redirect()->route('customer.invoices', ['id' => $codigo]);
+        session()->flash('message', 'Factura registrada');
+        return redirect()->route('customer.invoices', ['id' => $codigo])->withInput();
     }
 }
