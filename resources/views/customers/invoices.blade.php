@@ -81,9 +81,9 @@
                             <label for="num_fact">Punto de venta</label>
                             <select id="punto_venta" name="punto_venta" class="form-control" required>
                                 <option disabled selected value="">Seleccionar</option>
-                                <option value="pali">Pali</option>
-                                <option value="colonia">Colonia</option>
-                                <option value="oriental">Oriental</option>
+                                <option value="Pali">Pali</option>
+                                <option value="Colonia">Colonia</option>
+                                <option value="Oriental">Oriental</option>
                             </select>
 
                             <script>

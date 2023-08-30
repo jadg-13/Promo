@@ -8,8 +8,8 @@
                         <div class="col-lg-6">
                             <div class="card-body p-md-5 mx-md-4">
                                 <div class="text-center">
-                                    <img src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-login-form/lotus.webp"
-                                        style="width: 185px;" alt="logo">
+                                    <img src="https://images.pexels.com/photos/355465/pexels-photo-355465.jpeg"
+                                        style="width: 185px;" alt="logo" class="rounded-5">
                                     <h4 class="mt-1 mb-5 pb-1">Bienvenido</h4>
                                 </div>
 

@@ -37,3 +37,9 @@ Route::post('customers/invoices/save',[CustomerController::class, 'store_invoice
 
 Route::get('admin/customers', [AdminController::class, 'showCustomers'])->name('admin.customers');
 Route::get('admin/customers/find', [AdminController::class, 'showCustomersBy'])->name('customer.findby');
+Route::get('admin/customers/download', [AdminController::class, 'export'])->name('export'); 
+
+Route::get('admint/user/add', [AdminController::class, 'add'])->name('admin.user.add');
+Route::post('admin/user/add/save', [AdminController::class, 'store'])->name('admin.users.store');
+Route::get('admin/user/list', [AdminController::class, 'showUsers'])->name('admin.user.show');
+Route::get('admin/user/download', [AdminController::class, 'showUsersExport'])->name('exportuser'); 

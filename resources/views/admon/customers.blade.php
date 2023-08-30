@@ -1,17 +1,21 @@
-@extends('templates.template')
+@extends('templates.templateadmin')
 
 @section('content')
     <div class="embed-responsive embed-responsive-16by9">
-        <h1>Cliente</h1>
-
+        <h1>Clientes</h1>
+        
         <form action="{{ route('customer.findby') }}" method="GET" class="mb-4">
             <div class="form-row">
-                <div class="col-md-3 mb-3">
+                <div class="col-md-6 mb-4">
                     <label for="filter">Filtro</label>
                     <input type="text" name="filter" id="filter" class="form-control" value="{{ request('filter') }}">
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary">Filtrar</button>
+                <div class="col-md-6">
+                    <div class="row">
+                        <button type="submit" class="btn btn-outline-primary col-12 col-md-6">Filtrar</button>
+                        <a href="{{ route('export', ['filtro' => Request::get('filter')]) }}" class="btn btn-outline-success col-12 col-md-6">Exportar</a>
+                    </div>
+                    
                 </div>
             </div>
         </form>

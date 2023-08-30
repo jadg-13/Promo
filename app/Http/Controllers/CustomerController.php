@@ -71,9 +71,14 @@ class CustomerController extends Controller
             $expiresAt = now()->addMinutes(120);
             Session::put('user_id', $id);
             Session::put('expires_at', $expiresAt);
+            $rol = $customer->rol;
+            if($rol=="admin"){
+                return redirect()->route('admin.customers');
+            }else{
+                return redirect()->route('customer.invoices', ['id' => $id]);
+            }
 
-
-            return redirect()->route('customer.invoices', ['id' => $id]);
+            
         } else {
             session()->flash('error_message', 'Error al validar: El código ingresado no existe o ya fue registrado');
             return redirect()->back();

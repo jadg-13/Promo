@@ -1,7 +1,7 @@
 @extends('templates.template')
 
 @section('content')
-    <h1>Register</h1>
+    <h1>Registrar</h1>
     <form method="POST" action="{{ route('customer.register') }}">
         @csrf
         <div class="col-12 col-md-4">
