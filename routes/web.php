@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AdminController;
 use App\Http\Controllers\CustomerController;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Route;
@@ -16,18 +17,23 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('customers.login');
 });
 
 Route::get('customers', [CustomerController::class, 'index'])->name('customer.index');
 Route::post('customers/login', [CustomerController::class, 'login'])->name('customer.login');
-Route::get('customers/invalid', [CustomerController::class, 'invalid'])->name('customer.invalid');
 Route::get('customers/confirmcode/{id}',[CustomerController::class, 'confirmcode'] )->name('customer.confirm');
-Route::get('customers/close', [CustomerController::class, 'logout'])->name('customer.logout');
 Route::post('customers/validatecode', [CustomerController::class, 'validatecode'])->name('validatecode');
+Route::get('customers/invalid', [CustomerController::class, 'invalid'])->name('customer.invalid');
+Route::get('customers/close', [CustomerController::class, 'logout'])->name('customer.logout');
+
 
 Route::get('customers/add', [CustomerController::class, 'addCustomer'])->name('customer.add');
 Route::post('customesr/register/save', [CustomerController::class, 'register'])->name('customer.register');
 
 Route::get('customers/invoices/{id}', [CustomerController::class, 'view_invoices'])->name('customer.invoices');
 Route::post('customers/invoices/save',[CustomerController::class, 'store_invoice'])->name('customer.invoices.save');
+
+
+Route::get('admin/customers', [AdminController::class, 'showCustomers'])->name('admin.customers');
+Route::get('admin/customers/find', [AdminController::class, 'showCustomersBy'])->name('customer.findby');

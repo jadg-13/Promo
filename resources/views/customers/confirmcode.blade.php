@@ -11,7 +11,7 @@
                 <input type="hidden" name="id" value="{{ $customer->id }}">
                 <input type="text" name="codigo" id="codigo" class="form-control">
 
-                <button type="submit" class="btn btn-outline-success">Confirmar</button>
+                <button type="submit" class="btn btn-outline-primary">Confirmar</button>
             </div>
         </div>
 

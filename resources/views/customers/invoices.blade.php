@@ -66,23 +66,18 @@
                             <label for="num_fact">Número de Factura</label>
                             <input type="text" id="num_fact" name="num_fact" class="form-control"
                                 value="{{ old('num_fact') }}" required>
-                            @if ($errors->has('Advertencia'))
-                                <br>
-                                "{{ $errors->first('Advertencia') }}"
-                            @endif
+                    
                         </div>
                         <div class="col-12 col-md-6">
                             <label for="codigo_fact">Codigo a verificar</label>
                             <input type="text" id="codigo_fact" name="codigo_fact" class="form-control"
                                 value="{{ old('codigo_fact') }}" required>
-                            @if ($errors->has('Advertencia_1'))
-                                <br>
-                                "{{ $errors->first('Advertencia_1') }}"
-                            @endif
+                           
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-12  ">
+                            <br>
                             <label for="num_fact">Punto de venta</label>
                             <select id="punto_venta" name="punto_venta" class="form-control" required>
                                 <option disabled selected value="">Seleccionar</option>
@@ -108,6 +103,7 @@
                     <br>
                     <div class="row">
                         <div class="col-12">
+                            <br>
                             <label for="foto">Foto:</label>
                             <img id="imagenMiniatura" src="#" alt="Miniatura de la imagen"
                                 style="display: none; max-width: 200px; max-height: 200px;">

@@ -10,7 +10,6 @@ use App\Models\Invoice;
 use App\Models\CodePromo;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Auth;
-use RealRashid\SweetAlert\Facades\Alert;
 
 class CustomerController extends Controller
 {
@@ -122,6 +121,7 @@ class CustomerController extends Controller
         $customer->email = $request->email;
         $codigoVerificacion = mt_rand(100000, 999999);
         $customer->code_mail = $codigoVerificacion;
+        $customer->rol = 'cliente';
         $customer->save();
 
         Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
@@ -142,7 +142,7 @@ class CustomerController extends Controller
 
         $existe = Invoice::where('invoice_number', $request->num_fact)->first();
         if ($existe) {
-            $mensaje = 'El registro de la factura ya existe';
+            $mensaje = 'El número de factura ya fue registrado.';
             session()->flash('error_message', $mensaje);
             return redirect()->back()
             ->withInput();
@@ -170,6 +170,7 @@ class CustomerController extends Controller
         $dato->identification = $request->identification;
         $dato->phone = $request->phone;
         $dato->invoice_number = $request->num_fact;
+        $dato->code = $request->codigo_fact;
         $dato->point_sale = $request->punto_venta;
         if ($request->hasFile('imagen')) {
             $image = $request->file('imagen');

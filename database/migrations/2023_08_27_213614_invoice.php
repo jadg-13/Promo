@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string('identification');
             $table->string('phone');
             $table->string('invoice_number');
+            $table->string('code');
             $table->string('point_sale');
             $table->string('image')->nullable();
             $table->timestamps();
