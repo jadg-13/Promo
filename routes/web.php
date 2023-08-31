@@ -43,3 +43,5 @@ Route::get('admint/user/add', [AdminController::class, 'add'])->name('admin.user
 Route::post('admin/user/add/save', [AdminController::class, 'store'])->name('admin.users.store');
 Route::get('admin/user/list', [AdminController::class, 'showUsers'])->name('admin.user.show');
 Route::get('admin/user/download', [AdminController::class, 'showUsersExport'])->name('exportuser'); 
+//Route::get('admin/code/import', [AdminController::class, 'importExcel'])->name('importcode'); 
+//Route::post('admin/code/import/xls', [ExportController::class, 'importXls'])->name('importxls'); 

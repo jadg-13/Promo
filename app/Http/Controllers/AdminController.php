@@ -12,82 +12,80 @@ use App\Mail\VerificacionCorreo;
 
 class AdminController extends Controller
 {
-    //
+
     public function showCustomers()
     {
-        
+        if (session()->has('user_id')) {
+            $datos = DB::table('invoices')
+                ->join('customers', 'invoices.id_customer', '=', 'customers.id')
+                ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+                ->get();
+
+            return view('admon.customers', compact('datos'));
+        }
+        return view('customers.login');
+    }
+
+    public function showCustomersBy(Request $request)
+    {
+        $filtro = $request->input('filter');
         $datos = DB::table('invoices')
             ->join('customers', 'invoices.id_customer', '=', 'customers.id')
             ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+            ->where('invoices.first_name', 'LIKE', "%$filtro%")
+            ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
+            ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
+            ->orwhere('customers.email', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.phone', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.code', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
             ->get();
-
         return view('admon.customers', compact('datos'));
     }
 
-    public function showCustomersBy(Request $request){
-        $filtro = $request->input('filter');
-
-        $datos = DB::table('invoices')
-        ->join('customers', 'invoices.id_customer', '=', 'customers.id')
-        ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
-        ->where('invoices.first_name', 'LIKE', "%$filtro%")
-        ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
-        ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
-        ->orwhere('customers.email', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.phone', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.code', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
-        ->get();
-        return view('admon.customers', compact('datos'));
-
-    }
-
-    public function export(Request $request){
+    public function export(Request $request)
+    {
         $filtro = $request->input('filtro');
-     
         $datos = DB::table('invoices')
-        ->join('customers', 'invoices.id_customer', '=', 'customers.id')
-        ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
-        ->where('invoices.first_name', 'LIKE', "%$filtro%")
-        ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
-        ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
-        ->orwhere('customers.email', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.phone', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.code', 'LIKE', "%$filtro%")
-        ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
-        ->get();
+            ->join('customers', 'invoices.id_customer', '=', 'customers.id')
+            ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+            ->where('invoices.first_name', 'LIKE', "%$filtro%")
+            ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
+            ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
+            ->orwhere('customers.email', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.phone', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.code', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
+            ->get();
         $rutaImagenes = public_path('images/');
         foreach ($datos as $registro) {
             $registro->image = $rutaImagenes . $registro->image;
         }
-
         $columnHeaders = [
             'ID', 'Nombres', 'Apellidos', 'Identificacion', 'Email', 'Teléfono', 'Factura', 'Código', 'Punto de venta', 'Imagen'
         ];
-    
         return Excel::download(new InvoicesExport($datos, $columnHeaders), 'Clientes.xlsx');
         //return Excel::download(new InvoicesExport($datos),'Datos.xlsx');
     }
 
-    public function add(){
+    public function add()
+    {
         return view('admon.add');
     }
 
     public function store(Request $request)
     {
-        $email= $request->email;
+        $email = $request->email;
         $existe = Customer::where('email', 'LIKE', "$email")->first();
-        
+
         if ($existe) {
             $mensaje = 'El email fue registrado anteriormente.';
             session()->flash('error_message', $mensaje);
             return redirect()->back()
-            ->withInput();
-            
+                ->withInput();
         }
-
         // Crear el usuario en la base de datos
         $customer = new Customer();
         $customer->email = $request->email;
@@ -95,43 +93,38 @@ class AdminController extends Controller
         $customer->code_mail = $codigoVerificacion;
         $customer->rol = 'admin';
         $customer->save();
-
         Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
-
         // Redirige al usuario a una página de éxito o muestra un mensaje
         $mensaje = 'Registro guardado.';
-            session()->flash('success_message', $mensaje);
-            return redirect()->back()
+        session()->flash('success_message', $mensaje);
+        return redirect()->back()
             ->withInput();
-        
     }
-    
-    public function showUsers(Request $request){
-        $filtro = $request->input('filter');
 
-        $datos = Customer::where('email', 'LIKE', "%$filtro%")   
-        ->where('rol', 'LIKE', 'admin')
-        ->get();
-      
+    public function showUsers(Request $request)
+    {
+        $filtro = $request->input('filter');
+        $datos = Customer::where('email', 'LIKE', "%$filtro%")
+            ->where('rol', 'LIKE', 'admin')
+            ->get();
         return view('admon.users', compact('datos'));
-
     }
-    
-    public function showUsersExport(Request $request){
-        $filtro = $request->input('filter');
 
-        $datos = Customer::where('email', 'LIKE', "%$filtro%")   
-        ->where('rol', 'LIKE', 'admin')
-        ->get();
-      
+    public function showUsersExport(Request $request)
+    {
+        $filtro = $request->input('filtro');
+       
+        $datos = Customer::where('email', 'LIKE', "%$filtro%")
+            ->where('rol', 'LIKE', 'admin')
+            ->get();
         $columnHeaders = [
             'ID', 'EMAIL', 'CODIGO', 'FECHA VERIFICACION', 'ROL', 'FECHA CREACION', 'FECHA ACTUALIZACION'
         ];
-    
         return Excel::download(new InvoicesExport($datos, $columnHeaders), 'Usuarios.xlsx');
-
     }
 
-
+    public function importExcel(){
+        return view('admon.importcode');
+    }
 
 }

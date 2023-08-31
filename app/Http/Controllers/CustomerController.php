@@ -13,11 +13,8 @@ use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
-    //
     public function index()
     {
-
-
         if (session()->has('user_id')) {
             $id = Session::get('user_id');
             $this->view_invoices($id);
@@ -27,9 +24,7 @@ class CustomerController extends Controller
         } else {
             return view('customers.login');
         }
-        //return view('customers.login');
     }
-
 
     public function logout()
     {
@@ -54,20 +49,15 @@ class CustomerController extends Controller
 
     public function validatecode(Request $request)
     {
-
         $id = $request->id;
         $code = $request->codigo;
         $customer = Customer::find($id);
-
-
         if ($customer->code_mail == $code) {
             $valor = now();
-
             $customer->code_mail = $code;
             $customer->email_verified_at = $valor;
             $customer->save();
             $id = $customer->id;
-
             $expiresAt = now()->addMinutes(120);
             Session::put('user_id', $id);
             Session::put('expires_at', $expiresAt);
@@ -77,30 +67,22 @@ class CustomerController extends Controller
             }else{
                 return redirect()->route('customer.invoices', ['id' => $id]);
             }
-
-            
         } else {
             session()->flash('error_message', 'Error al validar: El código ingresado no existe o ya fue registrado');
             return redirect()->back();
-            
         }
     }
 
     public function login(Request $request)
     {
         $email = $request->email;
-
         // Buscar al cliente en la base de datos
         $customer = Customer::where('email', $email)->first();
-
         if ($customer) {
             $codigoVerificacion = mt_rand(100000, 999999);
             $customer->code_mail = $codigoVerificacion;
             $customer->save();
-
             Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
-
-
             $dato = $customer->id;
             return redirect()->route('customer.confirm', ['id' => $dato]);
         } else {
@@ -119,8 +101,6 @@ class CustomerController extends Controller
         $request->validate([
             'email' => 'required|email|unique:customers'
         ]);
-
-
         // Crear el usuario en la base de datos
         $customer = new Customer();
         $customer->email = $request->email;
@@ -128,7 +108,6 @@ class CustomerController extends Controller
         $customer->code_mail = $codigoVerificacion;
         $customer->rol = 'cliente';
         $customer->save();
-
         Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
 
         // Redirige al usuario a una página de éxito o muestra un mensaje
@@ -144,16 +123,13 @@ class CustomerController extends Controller
 
     public function store_invoice(Request $request)
     {
-
         $existe = Invoice::where('invoice_number', $request->num_fact)->first();
         if ($existe) {
             $mensaje = 'El número de factura ya fue registrado.';
             session()->flash('error_message', $mensaje);
             return redirect()->back()
-            ->withInput();
-            
+            ->withInput();       
         }
-
         $code = $request->codigo_fact;
         $promo = CodePromo::where('code', $code)->first();
         if ($promo && $promo->asset == true) {
@@ -166,8 +142,6 @@ class CustomerController extends Controller
             return redirect()->back()
             ->withInput();
         }
-
-
         $dato = new Invoice();
         $dato->id_customer = $request->customer_id;
         $dato->first_name = $request->firstname;
@@ -183,7 +157,6 @@ class CustomerController extends Controller
             $image->move(public_path('images'), $imageName);
             $dato->image = $imageName;
         }
-
         $dato->save();
         $codigo = $request->customer_id;
         session()->flash('message', 'Factura registrada');

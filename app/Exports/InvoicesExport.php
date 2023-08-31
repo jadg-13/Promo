@@ -5,6 +5,7 @@ namespace App\Exports;
 use App\Models\Invoice;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\WithHeadings;
+use App\Models\CodePromo;
 
 class InvoicesExport implements FromCollection, WithHeadings
 {
@@ -29,4 +30,5 @@ class InvoicesExport implements FromCollection, WithHeadings
     {
         return $this->headers;
     }
+
 }

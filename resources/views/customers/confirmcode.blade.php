@@ -1,22 +1,28 @@
 @extends('templates.template')
 @section('content')
-    <h1>Confirmar Código de Seguridad</h1>
+    <div class="d-flex justify-content-center align-items-center" style="min-height: 100vh;">
+        <div class="card" style="width: 32rem;">
 
-    <p>Por favor, ingresa el código de seguridad enviado a tu correo electrónico:</p>
 
-    <form method="POST" action="{{ route('validatecode') }}" class="frm">
-        @csrf
-        <div class="row">
-            <div class="col-12 col-md-6">
-                <input type="hidden" name="id" value="{{ $customer->id }}">
-                <input type="text" name="codigo" id="codigo" class="form-control">
+            <form method="POST" action="{{ route('validatecode') }}" class="frm">
+                @csrf
+                <h1 class="h2 text-center">Confirmar Código de Seguridad</h1>
 
-                <button type="submit" class="btn btn-outline-primary">Confirmar</button>
-            </div>
+                <p class ="container">Por favor, ingresa el código de seguridad enviado a tu correo electrónico:</p>
+                <div class="form-group p-md-4">
+                    <div class="col-12">
+                        <input type="hidden" name="id" value="{{ $customer->id }}">
+                        <input type="text" name="codigo" id="codigo" class="form-control">
+                    </div>
+                    <div class="form-group p-md-3">
+                        <button type="submit" class="btn btn-outline-primary col-12">Confirmar</button>
+                    </div>
+                </div>
+
+
+            </form>
         </div>
-
-
-    </form>
+    </div>
 @endsection
 
 @section('js')
