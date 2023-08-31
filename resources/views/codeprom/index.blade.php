@@ -82,4 +82,13 @@
             });
         </script>
     @endif
+    @if (session('error_message'))
+    <script>
+        Swal.fire({
+            icon: 'error',
+            title: 'Error:',
+            text: '{{ session('error_message') }}'
+        });
+    </script>
+@endif
 @endsection

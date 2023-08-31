@@ -76,9 +76,12 @@ class CodePromoController extends Controller
                     'updated_at'=>now()
                 ];
             }
-
+            try {
             CodePromo::insert($datosImportar);
             session()->flash('message', 'Registros importados y almacenados...');
+            }catch (\Exception $e) {
+                session()->flash('error_message', 'Error al subir datos: '. $e->getMessage() );
+            }
         }
     }
 
