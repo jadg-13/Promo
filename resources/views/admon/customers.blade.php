@@ -33,6 +33,7 @@
                     <th>Código Asignado</th>
                     <th>Punto de venta</th>
                     <th>Imagen</th>
+                    <th>Fecha de registro</th>
                 </tr>
             </thead>
             <tbody>
@@ -52,6 +53,7 @@
                         @else
                             Sin imagen
                         @endif</td>
+                        <td>{{$user->created_at}}</td>
                     </tr>
                 @endforeach
             </tbody>

@@ -105,11 +105,10 @@ class CustomerController extends Controller
         $customer = new Customer();
         $customer->email = $request->email;
         $codigoVerificacion = mt_rand(100000, 999999);
-        $customer->code_mail = $codigoVerificacion;
+        $customer->code_mail = "";//$codigoVerificacion;
         $customer->rol = 'cliente';
         $customer->save();
-        Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
-
+        //Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
         // Redirige al usuario a una página de éxito o muestra un mensaje
         return view('customers.login');
     }

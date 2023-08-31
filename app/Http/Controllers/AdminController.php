@@ -18,7 +18,7 @@ class AdminController extends Controller
         if (session()->has('user_id')) {
             $datos = DB::table('invoices')
                 ->join('customers', 'invoices.id_customer', '=', 'customers.id')
-                ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+                ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image', 'invoices.created_at')
                 ->get();
 
             return view('admon.customers', compact('datos'));
@@ -31,7 +31,7 @@ class AdminController extends Controller
         $filtro = $request->input('filter');
         $datos = DB::table('invoices')
             ->join('customers', 'invoices.id_customer', '=', 'customers.id')
-            ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+            ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image', 'invoices.created_at')
             ->where('invoices.first_name', 'LIKE', "%$filtro%")
             ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
             ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
@@ -40,6 +40,7 @@ class AdminController extends Controller
             ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
             ->orWhere('invoices.code', 'LIKE', "%$filtro%")
             ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
+            ->orwhere('invoices.created_at', 'LIKE', "%$filtro%")
             ->get();
         return view('admon.customers', compact('datos'));
     }
@@ -49,7 +50,7 @@ class AdminController extends Controller
         $filtro = $request->input('filtro');
         $datos = DB::table('invoices')
             ->join('customers', 'invoices.id_customer', '=', 'customers.id')
-            ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image')
+            ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image', 'invoices.created_at')
             ->where('invoices.first_name', 'LIKE', "%$filtro%")
             ->orwhere('invoices.second_name', 'LIKE', "%$filtro%")
             ->orwhere('invoices.identification', 'LIKE', "%$filtro%")
@@ -58,13 +59,14 @@ class AdminController extends Controller
             ->orWhere('invoices.invoice_number', 'LIKE', "%$filtro%")
             ->orWhere('invoices.code', 'LIKE', "%$filtro%")
             ->orWhere('invoices.point_sale', 'LIKE', "%$filtro%")
+            ->orWhere('invoices.created_at', 'LIKE', "%$filtro%")
             ->get();
         $rutaImagenes = public_path('images/');
         foreach ($datos as $registro) {
             $registro->image = $rutaImagenes . $registro->image;
         }
         $columnHeaders = [
-            'ID', 'Nombres', 'Apellidos', 'Identificacion', 'Email', 'Teléfono', 'Factura', 'Código', 'Punto de venta', 'Imagen'
+            'ID', 'Nombres', 'Apellidos', 'Identificacion', 'Email', 'Teléfono', 'Factura', 'Código', 'Punto de venta', 'Imagen', 'Fecha de Registro'
         ];
         return Excel::download(new InvoicesExport($datos, $columnHeaders), 'Clientes.xlsx');
         //return Excel::download(new InvoicesExport($datos),'Datos.xlsx');
@@ -90,10 +92,10 @@ class AdminController extends Controller
         $customer = new Customer();
         $customer->email = $request->email;
         $codigoVerificacion = mt_rand(100000, 999999);
-        $customer->code_mail = $codigoVerificacion;
+        $customer->code_mail = "";//$codigoVerificacion;
         $customer->rol = 'admin';
         $customer->save();
-        Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
+        //Mail::to($request->email)->send(new VerificacionCorreo($codigoVerificacion));
         // Redirige al usuario a una página de éxito o muestra un mensaje
         $mensaje = 'Registro guardado.';
         session()->flash('success_message', $mensaje);
@@ -116,15 +118,12 @@ class AdminController extends Controller
        
         $datos = Customer::where('email', 'LIKE', "%$filtro%")
             ->where('rol', 'LIKE', 'admin')
+            ->where('code_mail', 'LIKE', "%$filtro%")
             ->get();
         $columnHeaders = [
             'ID', 'EMAIL', 'CODIGO', 'FECHA VERIFICACION', 'ROL', 'FECHA CREACION', 'FECHA ACTUALIZACION'
         ];
         return Excel::download(new InvoicesExport($datos, $columnHeaders), 'Usuarios.xlsx');
-    }
-
-    public function importExcel(){
-        return view('admon.importcode');
     }
 
 }

@@ -31,6 +31,9 @@
                       <li class="nav-item">
                         <a class="nav-link" href="{{route('admin.user.show')}}">Usuarios</a>
                       </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="{{route('admin.codes.index')}}">Códigos</a>
+                      </li>
                       
                     </ul>
                   </div>
