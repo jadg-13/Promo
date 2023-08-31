@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\CodePromo;
 use Illuminate\Http\Request;
+use Excel;
 
 class CodePromoController extends Controller
 {
@@ -58,4 +59,29 @@ class CodePromoController extends Controller
         ->get();
         return view('codeprom.index', compact('datos'));
     }
+
+     public function importar(Request $request)
+{
+    if ($request->hasFile('excel_file')) {
+        $path = $request->file('excel_file')->getRealPath();
+        $datos = Excel::toArray([], $path);
+
+        if (!empty($datos) && count($datos)) {
+            $datosImportar = [];
+
+            foreach ($datos[0] as $dato) {
+                $datosImportar[] = [
+                    'code' => $dato[0],
+                    'created_at'=> now(), 
+                    'updated_at'=>now()
+                ];
+            }
+
+            CodePromo::insert($datosImportar);
+            session()->flash('message', 'Registros importados y almacenados...');
+        }
+    }
+
+    return back();
+}
 }

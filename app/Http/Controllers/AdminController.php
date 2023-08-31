@@ -69,7 +69,6 @@ class AdminController extends Controller
             'ID', 'Nombres', 'Apellidos', 'Identificacion', 'Email', 'Teléfono', 'Factura', 'Código', 'Punto de venta', 'Imagen', 'Fecha de Registro'
         ];
         return Excel::download(new InvoicesExport($datos, $columnHeaders), 'Clientes.xlsx');
-        //return Excel::download(new InvoicesExport($datos),'Datos.xlsx');
     }
 
     public function add()

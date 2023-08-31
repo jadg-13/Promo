@@ -8,4 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class CodePromo extends Model
 {
     use HasFactory;
+    protected $fillable = [
+        'code',      
+    ];
 }

@@ -2,18 +2,32 @@
 
 @section('content')
     <h1>Códigos</h1>
-    <a href="{{ route('admin.codes.add') }}" class="btn btn-outline-success">Nuevo Registro</a>
+    <div class="row mb-3 ">
+        <div class="col-md-6">
+            <a href="{{ route('admin.codes.add') }}" class="btn btn-outline-success">Nuevo Registro</a>
+        </div>
+        <div class="col-md-6">
+            <form action="{{ route('admin.codes.importxls') }}" method="POST" enctype="multipart/form-data">
+                @csrf
+                <input type="file" name="excel_file">
+                <button type="submit" class="btn btn-outline-primary">Importar</button>
+            </form>
+        </div>
+    </div>
     <form action="{{ route('admin.codes.findby') }}" method="GET" class="mb-4">
-        <div class="form-row">
-            <div class="col-md-6 mb-4">
+        <div class="row  ">
+            <div class="col-auto">
                 <label for="filter">Filtro</label>
-                <input type="text" name="filter" id="filter" class="form-control" value="{{ request('filter') }}">
             </div>
             <div class="col-md-6">
+                <input type="text" name="filter" id="filter" class="form-control" value="{{ request('filter') }}">
+            </div>
+            <div class="col-md-3">
                 <button type="submit" class="btn btn-outline-primary col-12 col-md-6">Filtrar</button>
             </div>
-
         </div>
+
+
     </form>
 
     <table class="table table-striped">
@@ -49,7 +63,6 @@
 @endsection
 
 @section('js')
-
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     @if (session('message'))
         <script>
@@ -69,5 +82,4 @@
             });
         </script>
     @endif
-    
 @endsection
