@@ -50,41 +50,42 @@ class CodePromoController extends Controller
         return view('codeprom.index', compact('datos'));
     }
 
-    public function findby(Request $request){   
+    public function findby(Request $request)
+    {
         $filtro = $request->input('filter');
         $datos = CodePromo::where('code', 'LIKE', "%$filtro%")
-        ->orwhere('asset', 'LIKE', "%$filtro%")
-        ->orwhere('verified_at', 'LIKE', "%$filtro%")
-        ->orwhere('created_at', 'LIKE', "%$filtro%")
-        ->get();
+            ->orwhere('asset', 'LIKE', "%$filtro%")
+            ->orwhere('verified_at', 'LIKE', "%$filtro%")
+            ->orwhere('created_at', 'LIKE', "%$filtro%")
+            ->get();
         return view('codeprom.index', compact('datos'));
     }
 
-     public function importar(Request $request)
-{
-    if ($request->hasFile('excel_file')) {
-        $path = $request->file('excel_file')->getRealPath();
-        $datos = Excel::toArray([], $path);
+    public function importar(Request $request)
+    {
+        if ($request->hasFile('excel_file')) {
+            $path = $request->file('excel_file')->getRealPath();
+            $datos = Excel::toArray([], $path);
 
-        if (!empty($datos) && count($datos)) {
-            $datosImportar = [];
+            if (!empty($datos) && count($datos)) {
+                $datosImportar = [];
 
-            foreach ($datos[0] as $dato) {
-                $datosImportar[] = [
-                    'code' => $dato[0],
-                    'created_at'=> now(), 
-                    'updated_at'=>now()
-                ];
-            }
-            try {
-            CodePromo::insert($datosImportar);
-            session()->flash('message', 'Registros importados y almacenados...');
-            }catch (\Exception $e) {
-                session()->flash('error_message', 'Error al subir datos: '. $e->getMessage() );
+                foreach ($datos[0] as $dato) {
+                    $datosImportar[] = [
+                        'code' => $dato[0],
+                        'created_at' => now(),
+                        'updated_at' => now()
+                    ];
+                }
+                try {
+                    CodePromo::insert($datosImportar);
+                    session()->flash('message', 'Registros importados y almacenados...');
+                } catch (\Exception $e) {
+                    session()->flash('error_message', 'Error al subir datos: ' . $e->getMessage());
+                }
             }
         }
-    }
 
-    return back();
-}
+        return back();
+    }
 }

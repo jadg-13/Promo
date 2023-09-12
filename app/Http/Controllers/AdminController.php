@@ -9,6 +9,7 @@ use Maatwebsite\Excel\Facades\Excel;
 use App\Models\Customer;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\VerificacionCorreo;
+use App\Models\Invoice;
 
 class AdminController extends Controller
 {
@@ -16,11 +17,13 @@ class AdminController extends Controller
     public function showCustomers()
     {
         if (session()->has('user_id')) {
-            $datos = DB::table('invoices')
+            /*$datos = DB::table('invoices')
                 ->join('customers', 'invoices.id_customer', '=', 'customers.id')
                 ->select('invoices.id', 'invoices.first_name', 'invoices.second_name', 'invoices.identification', 'customers.email', 'invoices.phone', 'invoices.invoice_number', 'invoices.code', 'invoices.phone', 'invoices.point_sale', 'invoices.image', 'invoices.created_at')
                 ->get();
-
+*/
+            $datos = Invoice::all();
+           // return $datos;
             return view('admon.customers', compact('datos'));
         }
         return view('customers.login');
